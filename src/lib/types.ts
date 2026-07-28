@@ -32,13 +32,35 @@ export interface RFQPayload {
   message: string;
 }
 
-export interface ContactPayload {
+export interface SupplierContactPayload {
+  type: "supplier";
   name: string;
   email: string;
-  company?: string;
-  message: string;
-  type: "supplier" | "buyer";
+  company: string;
+  phone: string;
+  commodity: string;
+  province: string;
+  products: string;
+  capacity: string;
+  exportExperience: string;
+  certifications?: string;
+  website?: string;
+  message?: string;
 }
+
+export interface BuyerContactPayload {
+  type: "buyer";
+  name: string;
+  email: string;
+  company: string;
+  country: string;
+  phone?: string;
+  commodityInterest: string;
+  quantity: string;
+  message: string;
+}
+
+export type ContactPayload = SupplierContactPayload | BuyerContactPayload;
 
 export interface SubmissionRecord {
   id: string;

@@ -11,13 +11,44 @@ export const rfqSchema = z.object({
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
-export const contactSchema = z.object({
+const contactBase = {
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  company: z.string().optional(),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-  type: z.enum(["supplier", "buyer"]),
+  company: z.string().min(2, "Company name is required"),
+};
+
+export const supplierContactSchema = z.object({
+  type: z.literal("supplier"),
+  ...contactBase,
+  phone: z.string().min(8, "Phone / WhatsApp is required"),
+  commodity: z.string().min(1, "Please select a commodity category"),
+  province: z.string().min(2, "Province / city is required"),
+  products: z.string().min(3, "Describe your main products"),
+  capacity: z.string().min(1, "Please select production capacity"),
+  exportExperience: z.string().min(1, "Please select export experience"),
+  certifications: z.string().optional(),
+  website: z
+    .string()
+    .url("Invalid website URL")
+    .optional()
+    .or(z.literal("")),
+  message: z.string().optional(),
 });
+
+export const buyerContactSchema = z.object({
+  type: z.literal("buyer"),
+  ...contactBase,
+  country: z.string().min(2, "Country is required"),
+  phone: z.string().optional(),
+  commodityInterest: z.string().min(1, "Please select a commodity"),
+  quantity: z.string().min(1, "Estimated quantity is required"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+});
+
+export const contactSchema = z.discriminatedUnion("type", [
+  supplierContactSchema,
+  buyerContactSchema,
+]);
 
 export const supplierSchema = z.object({
   id: z

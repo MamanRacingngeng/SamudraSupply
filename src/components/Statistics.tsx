@@ -16,7 +16,7 @@ export async function Statistics() {
         <Reveal>
           <div className="mb-12 max-w-md">
             <p className="samudra-label mb-3 !text-white/75">Statistics</p>
-            <h2 className="heading-display text-3xl text-white sm:text-4xl">
+            <h2 className="heading-display text-3xl !text-white sm:text-4xl">
               A growing export ecosystem
             </h2>
             <div className="samudra-heading-line mt-4 !from-white/60 !to-cyan-200/80" />

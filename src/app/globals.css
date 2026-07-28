@@ -84,8 +84,13 @@
 
   .heading-display {
     font-family: var(--font-display);
-    @apply font-semibold tracking-tight text-ink;
+    @apply font-semibold tracking-tight;
     letter-spacing: -0.01em;
+  }
+
+  .samudra-stats .heading-display,
+  .bg-sky-deep .heading-display {
+    @apply text-white;
   }
 
   .label-caps {

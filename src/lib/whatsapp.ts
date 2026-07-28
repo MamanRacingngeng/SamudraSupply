@@ -58,12 +58,13 @@ Check your email for full details.`;
 export async function notifyWhatsAppContact(
   type: string,
   name: string,
-  email: string
+  email: string,
+  summary?: string
 ) {
   const msg = `🌊 *Samudra Supply — ${type} Message*
 
 Name: ${name}
-Email: ${email}
+Email: ${email}${summary ? `\n${summary}` : ""}
 
 Check your email for full details.`;
   return sendWhatsApp(msg);

@@ -844,12 +844,40 @@ function RfqDetails({ data }: { data: RFQPayload }) {
 }
 
 function ContactDetails({ data }: { data: ContactPayload }) {
+  if (data.type === "supplier") {
+    return (
+      <dl className="grid gap-3 text-sm sm:grid-cols-2">
+        <DetailField label="Type" value="Supplier" />
+        <DetailField label="Name" value={data.name} />
+        <DetailField label="Email" value={data.email} />
+        <DetailField label="Company" value={data.company} />
+        <DetailField label="Phone" value={data.phone} />
+        <DetailField label="Commodity" value={data.commodity} />
+        <DetailField label="Province" value={data.province} />
+        <DetailField label="Products" value={data.products} />
+        <DetailField label="Capacity" value={data.capacity} />
+        <DetailField label="Export Experience" value={data.exportExperience} />
+        <DetailField label="Certifications" value={data.certifications ?? "—"} />
+        <DetailField label="Website" value={data.website ?? "—"} />
+        {data.message && (
+          <div className="sm:col-span-2">
+            <DetailField label="Notes" value={data.message} />
+          </div>
+        )}
+      </dl>
+    );
+  }
+
   return (
     <dl className="grid gap-3 text-sm sm:grid-cols-2">
-      <DetailField label="Type" value={data.type === "supplier" ? "Supplier" : "Buyer"} />
+      <DetailField label="Type" value="Buyer" />
       <DetailField label="Name" value={data.name} />
       <DetailField label="Email" value={data.email} />
-      <DetailField label="Company" value={data.company ?? "—"} />
+      <DetailField label="Company" value={data.company} />
+      <DetailField label="Country" value={data.country} />
+      <DetailField label="Phone" value={data.phone ?? "—"} />
+      <DetailField label="Commodity Interest" value={data.commodityInterest} />
+      <DetailField label="Quantity" value={data.quantity} />
       <div className="sm:col-span-2">
         <DetailField label="Message" value={data.message} />
       </div>

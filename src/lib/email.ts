@@ -117,16 +117,36 @@ export async function notifyContact(
 ) {
   const typeLabel = data.type === "supplier" ? "Supplier" : "Buyer";
 
-  const adminHtml = layout(
-    `New ${typeLabel} Message`,
-    `
+  const detailRows =
+    data.type === "supplier"
+      ? `
       ${row("Type", typeLabel)}
       ${row("Name", data.name)}
       ${row("Email", data.email)}
-      ${data.company ? row("Company", data.company) : ""}
-      ${row("Message", data.message.replace(/\n/g, "<br>"))}
+      ${row("Company", data.company)}
+      ${row("Phone", data.phone)}
+      ${row("Commodity", data.commodity)}
+      ${row("Province", data.province)}
+      ${row("Products", data.products)}
+      ${row("Capacity", data.capacity)}
+      ${row("Export Experience", data.exportExperience)}
+      ${data.certifications ? row("Certifications", data.certifications) : ""}
+      ${data.website ? row("Website", data.website) : ""}
+      ${data.message ? row("Notes", data.message.replace(/\n/g, "<br>")) : ""}
     `
-  );
+      : `
+      ${row("Type", typeLabel)}
+      ${row("Name", data.name)}
+      ${row("Email", data.email)}
+      ${row("Company", data.company)}
+      ${row("Country", data.country)}
+      ${data.phone ? row("Phone", data.phone) : ""}
+      ${row("Commodity Interest", data.commodityInterest)}
+      ${row("Quantity", data.quantity)}
+      ${row("Message", data.message.replace(/\n/g, "<br>"))}
+    `;
+
+  const adminHtml = layout(`New ${typeLabel} Message`, detailRows);
 
   const userHtml = layout(
     "Message Confirmation",

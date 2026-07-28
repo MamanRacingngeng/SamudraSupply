@@ -21,7 +21,7 @@ export function SectionHeading({
     >
       {label && (
         <p
-          className={`samudra-label mb-3 ${light ? "!text-cream/80" : ""} ${
+          className={`samudra-label mb-3 ${light ? "!text-white/80" : ""} ${
             align === "center" ? "mx-auto text-center" : ""
           }`}
         >
@@ -30,19 +30,21 @@ export function SectionHeading({
       )}
       <h2
         className={`heading-display text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.15] ${
-          light ? "text-cream" : "samudra-heading"
+          light ? "!text-white" : "samudra-heading text-ink"
         } ${align === "center" ? "mx-auto" : ""}`}
       >
         {title}
       </h2>
       <div
-        className={`samudra-heading-line mt-4 ${align === "center" ? "mx-auto" : ""}`}
+        className={`samudra-heading-line mt-4 ${light ? "!from-white/60 !to-cyan-200/80" : ""} ${
+          align === "center" ? "mx-auto" : ""
+        }`}
       />
       {description && (
         <p
           className={`mt-5 max-w-lg text-base leading-relaxed ${
             align === "center" ? "mx-auto" : ""
-          } ${light ? "text-cream/85" : "text-muted"}`}
+          } ${light ? "!text-white/85" : "text-muted"}`}
         >
           {description}
         </p>

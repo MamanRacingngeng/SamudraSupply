@@ -49,7 +49,11 @@ export async function notifyContact(data: ContactPayload) {
   }
 
   if (settings.whatsappEnabled && settings.whatsappAdminOnContact) {
-    tasks.push(notifyWhatsAppContact(typeLabel, data.name, data.email));
+    const summary =
+      data.type === "supplier"
+        ? `Commodity: ${data.commodity}\nProvince: ${data.province}`
+        : `Interest: ${data.commodityInterest}\nQty: ${data.quantity}`;
+    tasks.push(notifyWhatsAppContact(typeLabel, data.name, data.email, summary));
   }
 
   await Promise.allSettled(tasks);

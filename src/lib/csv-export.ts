@@ -1,5 +1,24 @@
 import type { ContactPayload, RFQPayload, SubmissionRecord } from "./types";
 
+function contactSummary(d: ContactPayload): {
+  company: string;
+  message: string;
+  extra: string;
+} {
+  if (d.type === "supplier") {
+    return {
+      company: d.company,
+      message: d.message ?? "",
+      extra: `${d.commodity} | ${d.province} | ${d.products}`,
+    };
+  }
+  return {
+    company: d.company,
+    message: d.message,
+    extra: `${d.country} | ${d.commodityInterest} | ${d.quantity}`,
+  };
+}
+
 function escapeCsv(value: string): string {
   if (value.includes(",") || value.includes('"') || value.includes("\n")) {
     return `"${value.replace(/"/g, '""')}"`;
@@ -50,10 +69,20 @@ export function submissionsToCsv(
   }
 
   if (kind === "contact") {
-    const headers = ["ID", "Date", "Type", "Name", "Email", "Company", "Message"];
+    const headers = [
+      "ID",
+      "Date",
+      "Type",
+      "Name",
+      "Email",
+      "Company",
+      "Details",
+      "Message",
+    ];
     const lines = [row(headers)];
     for (const s of submissions.filter((x) => x.kind === "contact")) {
       const d = s.data as ContactPayload;
+      const summary = contactSummary(d);
       lines.push(
         row([
           s.id,
@@ -61,8 +90,9 @@ export function submissionsToCsv(
           d.type,
           d.name,
           d.email,
-          d.company ?? "",
-          d.message,
+          summary.company,
+          summary.extra,
+          summary.message,
         ])
       );
     }
@@ -104,6 +134,7 @@ export function submissionsToCsv(
       );
     } else {
       const d = s.data as ContactPayload;
+      const summary = contactSummary(d);
       lines.push(
         row([
           "Contact",
@@ -112,11 +143,11 @@ export function submissionsToCsv(
           d.type,
           d.name,
           d.email,
-          d.company ?? "",
+          summary.company,
+          summary.extra,
           "",
           "",
-          "",
-          d.message,
+          summary.message,
         ])
       );
     }
