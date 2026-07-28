@@ -1,0 +1,7 @@
+{
+  "emailEnabled": true,
+  "whatsappEnabled": true,
+  "emailBuyerConfirmation": true,
+  "whatsappAdminOnRfq": true,
+  "whatsappAdminOnContact": true
+}
