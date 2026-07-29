@@ -30,9 +30,11 @@ yarn-error.log*
 
 # env files
 .env*
+!.env.example
 
 # vercel
 .vercel
 
-# submissions (generated at runtime)
+# runtime data (generated on server)
 /data/submissions/*.json
+/data/activity.json

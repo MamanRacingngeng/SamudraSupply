@@ -1,50 +1,24 @@
 import "server-only";
 
-import { readFile, writeFile, mkdir, copyFile } from "fs/promises";
-import path from "path";
 import { ensurePlatformReady } from "./bootstrap";
 import type { Supplier } from "./types";
-const DATA_DIR = path.join(process.cwd(), "data");
-const SUPPLIERS_FILE = path.join(DATA_DIR, "suppliers.json");
-const SEED_FILE = path.join(DATA_DIR, "suppliers.seed.json");
-
-async function ensureDataDir() {
-  await mkdir(DATA_DIR, { recursive: true });
-}
+import { copyBundledIfMissing, readJsonFile, writeJsonFile } from "./json-store";
 
 async function seedIfMissing() {
-  await ensureDataDir();
-  try {
-    await readFile(SUPPLIERS_FILE, "utf-8");
-  } catch {
-    try {
-      await copyFile(SEED_FILE, SUPPLIERS_FILE);
-    } catch {
-      await writeFile(SUPPLIERS_FILE, "[]", "utf-8");
-    }
-  }
+  await copyBundledIfMissing("suppliers.json");
 }
 
 async function readSupplierList(): Promise<Supplier[]> {
   await ensurePlatformReady();
   await seedIfMissing();
-  try {
-    const raw = await readFile(SUPPLIERS_FILE, "utf-8");
-    const list = JSON.parse(raw) as Supplier[];
-    if (Array.isArray(list) && list.length > 0) return list;
-  } catch {
-    /* fall through to seed */
-  }
 
-  try {
-    const seed = await readFile(SEED_FILE, "utf-8");
-    const list = JSON.parse(seed) as Supplier[];
-    if (Array.isArray(list) && list.length > 0) {
-      await writeFile(SUPPLIERS_FILE, JSON.stringify(list, null, 2), "utf-8");
-      return list;
-    }
-  } catch {
-    /* ignore */
+  const list = await readJsonFile<Supplier[]>("suppliers.json", []);
+  if (Array.isArray(list) && list.length > 0) return list;
+
+  const seed = await readJsonFile<Supplier[]>("suppliers.seed.json", []);
+  if (Array.isArray(seed) && seed.length > 0) {
+    await writeJsonFile("suppliers.json", seed);
+    return seed;
   }
 
   return [];
@@ -84,14 +58,14 @@ export async function getFeaturedSuppliers(limit = 3): Promise<Supplier[]> {
 
 export async function createSupplier(data: Supplier): Promise<Supplier> {
   await seedIfMissing();
-  const list = JSON.parse(await readFile(SUPPLIERS_FILE, "utf-8")) as Supplier[];
+  const list = await readJsonFile<Supplier[]>("suppliers.json", []);
 
   if (list.some((s) => s.id === data.id)) {
     throw new Error("Supplier ID is already in use");
   }
 
   list.push(data);
-  await writeFile(SUPPLIERS_FILE, JSON.stringify(list, null, 2), "utf-8");
+  await writeJsonFile("suppliers.json", list);
   return data;
 }
 
@@ -100,21 +74,21 @@ export async function updateSupplier(
   data: Partial<Supplier>
 ): Promise<Supplier> {
   await seedIfMissing();
-  const list = JSON.parse(await readFile(SUPPLIERS_FILE, "utf-8")) as Supplier[];
+  const list = await readJsonFile<Supplier[]>("suppliers.json", []);
   const idx = list.findIndex((s) => s.id === id);
   if (idx === -1) throw new Error("Supplier not found");
 
   list[idx] = { ...list[idx], ...data, id };
-  await writeFile(SUPPLIERS_FILE, JSON.stringify(list, null, 2), "utf-8");
+  await writeJsonFile("suppliers.json", list);
   return list[idx];
 }
 
 export async function deleteSupplier(id: string): Promise<void> {
   await seedIfMissing();
-  const list = JSON.parse(await readFile(SUPPLIERS_FILE, "utf-8")) as Supplier[];
+  const list = await readJsonFile<Supplier[]>("suppliers.json", []);
   const idx = list.findIndex((s) => s.id === id);
   if (idx === -1) throw new Error("Supplier not found");
 
   list[idx].active = false;
-  await writeFile(SUPPLIERS_FILE, JSON.stringify(list, null, 2), "utf-8");
+  await writeJsonFile("suppliers.json", list);
 }

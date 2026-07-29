@@ -1,24 +1,11 @@
-import { mkdir, readFile, writeFile } from "fs/promises";
-import path from "path";
+import "server-only";
+
 import type { SubmissionRecord } from "./types";
-
-const DATA_DIR = path.join(process.cwd(), "data", "submissions");
-
-async function ensureDir() {
-  await mkdir(DATA_DIR, { recursive: true });
-}
-
-function filePath(kind: "rfq" | "contact") {
-  return path.join(DATA_DIR, `${kind}.json`);
-}
+import { ensurePlatformReady } from "./bootstrap";
+import { readJsonFile, writeJsonFile } from "./json-store";
 
 async function readSubmissions(kind: "rfq" | "contact"): Promise<SubmissionRecord[]> {
-  try {
-    const raw = await readFile(filePath(kind), "utf-8");
-    return JSON.parse(raw) as SubmissionRecord[];
-  } catch {
-    return [];
-  }
+  return readJsonFile<SubmissionRecord[]>(`submissions/${kind}.json`, []);
 }
 
 export async function getSubmissions(
@@ -64,7 +51,7 @@ export async function saveSubmission(
   kind: "rfq" | "contact",
   data: SubmissionRecord["data"]
 ): Promise<SubmissionRecord> {
-  await ensureDir();
+  await ensurePlatformReady();
   const record: SubmissionRecord = {
     id: `${kind}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     createdAt: new Date().toISOString(),
@@ -74,7 +61,7 @@ export async function saveSubmission(
 
   const existing = await readSubmissions(kind);
   existing.push(record);
-  await writeFile(filePath(kind), JSON.stringify(existing, null, 2), "utf-8");
+  await writeJsonFile(`submissions/${kind}.json`, existing);
 
   return record;
 }
